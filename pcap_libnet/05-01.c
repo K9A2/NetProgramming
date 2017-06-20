@@ -12,7 +12,7 @@ void printer(u_char *user, const struct pcap_pkthdr *h, const u_char *p)
 int main()
 {
     char ebuf[PCAP_ERRBUF_SIZE];
-    char *device = pcap_lookupdev(ebuf);
+    char *device = pcap_lookupdev(euf);
     if (device == NULL)
     {
         printf("%s:%s\n", "Cannot lookupdev", ebuf);

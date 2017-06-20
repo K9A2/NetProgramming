@@ -24,7 +24,7 @@ int main()
 	int sockfd;
 	int client_fd;
 
-	int sin_size;
+	int sin_size = sizeof(struct sockaddr_in);
 	int recvbytes;
 
 	char inputBuffer[256];
@@ -70,7 +70,6 @@ int main()
 	//Receive message from client
 	while (1)
 	{
-		sin_size = sizeof(struct sockaddr_in);
 
 		if ((client_fd = accept(sockfd, (struct sockaddr *)&client_addr, (socklen_t *)&sin_size)) == -1)
 		{
@@ -79,7 +78,7 @@ int main()
 			continue;
 		}
 
-		printf("Received a connection from remote host: %s\n", inet_ntoa(client_addr.sin_addr));
+		printf("Received connection from: %s:%d.\n", inet_ntoa(client_addr.sin_addr), client_addr.sin_port);
 		//Create a new process to manage this connection
 		if (!fork())
 		{
