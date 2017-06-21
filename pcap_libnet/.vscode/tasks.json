@@ -4,6 +4,6 @@
     "version": "0.1.0",
     "command": "gcc",
     "isShellCommand": true,
-    "args": ["-g", "pcap.c", "-lpcap"],
+    "args": ["-g", "payload.c"],
     "showOutput": "always"
 }

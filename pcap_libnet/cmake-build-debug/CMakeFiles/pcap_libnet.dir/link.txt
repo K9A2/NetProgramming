@@ -1,1 +1,1 @@
-/usr/bin/cc  -lpcap -g   CMakeFiles/pcap_libnet.dir/pcap.c.o  -o pcap_libnet 
+/usr/bin/cc  -lpcap -g   CMakeFiles/pcap_libnet.dir/pcap.c.o CMakeFiles/pcap_libnet.dir/dns.c.o CMakeFiles/pcap_libnet.dir/payload.c.o  -o pcap_libnet 

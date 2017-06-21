@@ -1,10 +1,59 @@
 #include <stdio.h>
 #include <libnet.h>
 
+typedef int bool;
+#define true  1
+#define false 0
+
+#define DEFAULT_QUERY_STRING_LENGTH 128
+
 void usage(char *prog)
 {
     fprintf(stderr, "Usage: %s -d dst_ip -q query_host [-s src_ip] [-t]\n", prog);
     exit(1);
+}
+
+void getQueryString(char *queryString) {
+
+    char link[] = "www.baidu.com";
+
+    char payload[DEFAULT_QUERY_STRING_LENGTH];
+
+    char *former = link;
+    char *latter = link;
+    char *result = payload;
+
+    int count = 0;
+
+    while (true) {
+        if (*former == '\0') {
+            *result++ = (char) (count + '0');
+            while (*latter != *former) {
+                *result++ = *latter++;
+            }
+            *result = '0';
+            break;
+        } else if (*former == '.') {
+            *result++ = (char) (count + '0');
+            count = 0;
+            while (*latter != *former) {
+                *result++ = *latter++;
+            }
+            former++;
+            latter++;
+            continue;
+        }
+        count++;
+        former++;
+    }
+
+    char *p1 = queryString;
+    char *p2 = payload;
+
+    while (*p2 != '\0') {
+        *p1++ = *p2++;
+    }
+
 }
 
 int main(int argc, char *argv[])
@@ -86,8 +135,11 @@ int main(int argc, char *argv[])
     /*
      * build dns payload
      */
-    payload_s = snprintf(payload, sizeof payload, "%c%s%c%c%c%c%c",
-                         (char)(strlen(query) & 0xff), query, 0x00, 0x00, 0x01, 0x00, 0x01);
+    getQueryString(payload);
+    printf("%s\n", query);
+    printf("%s\n", payload);
+
+    payload_s = (u_short) snprintf(payload, sizeof(payload), "%c%s%c%c%c%c%c", (char)(strlen(query)&0xff), query, 0x00, 0x00, 0x01, 0x00, 0x01);
 
     /*
      * build packet
