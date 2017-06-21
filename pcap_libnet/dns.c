@@ -29,9 +29,9 @@ int main(int argc, char *argv[])
      *  Initialize the library.  Root priviledges are required.
      */
     l = libnet_init(
-        LIBNET_RAW4, /* injection type */
-        NULL,        /* network interface */
-        errbuf);     /* error buffer */
+            LIBNET_RAW4, /* injection type */
+            NULL,        /* network interface */
+            errbuf);     /* error buffer */
 
     if (!l)
     {
@@ -47,28 +47,28 @@ int main(int argc, char *argv[])
         switch (c)
         {
 
-        case 'd':
-            if ((dst_ip = libnet_name2addr4(l, optarg, LIBNET_RESOLVE)) == -1)
-            {
-                fprintf(stderr, "Bad destination IP address: %s\n", optarg);
+            case 'd':
+                if ((dst_ip = libnet_name2addr4(l, optarg, LIBNET_RESOLVE)) == -1)
+                {
+                    fprintf(stderr, "Bad destination IP address: %s\n", optarg);
+                    exit(EXIT_FAILURE);
+                }
+                break;
+            case 's':
+                if ((src_ip = libnet_name2addr4(l, optarg, LIBNET_RESOLVE)) == -1)
+                {
+                    fprintf(stderr, "Bad source IP address: %s\n", optarg);
+                    exit(EXIT_FAILURE);
+                }
+                break;
+            case 'q':
+                query = optarg;
+                break;
+            case 't':
+                type = LIBNET_TCP_DNSV4_H;
+                break;
+            default:
                 exit(EXIT_FAILURE);
-            }
-            break;
-        case 's':
-            if ((src_ip = libnet_name2addr4(l, optarg, LIBNET_RESOLVE)) == -1)
-            {
-                fprintf(stderr, "Bad source IP address: %s\n", optarg);
-                exit(EXIT_FAILURE);
-            }
-            break;
-        case 'q':
-            query = optarg;
-            break;
-        case 't':
-            type = LIBNET_TCP_DNSV4_H;
-            break;
-        default:
-            exit(EXIT_FAILURE);
         }
     }
 
@@ -83,27 +83,27 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    /* 
-     * build dns payload 
+    /*
+     * build dns payload
      */
     payload_s = snprintf(payload, sizeof payload, "%c%s%c%c%c%c%c",
                          (char)(strlen(query) & 0xff), query, 0x00, 0x00, 0x01, 0x00, 0x01);
 
-    /* 
+    /*
      * build packet
      */
     dns = libnet_build_dnsv4(
-        type,   /* TCP or UDP */
-        0x7777, /* id */
-        0x0100, /* request */
-        1,      /* num_q */
-        0,      /* num_anws_rr */
-        0,      /* num_auth_rr */
-        0,      /* num_addi_rr */
-        payload,
-        payload_s,
-        l,
-        0);
+            type,   /* TCP or UDP */
+            0x7777, /* id */
+            0x0100, /* request */
+            1,      /* num_q */
+            0,      /* num_anws_rr */
+            0,      /* num_auth_rr */
+            0,      /* num_addi_rr */
+            payload,
+            payload_s,
+            l,
+            0);
 
     if (dns == -1)
     {
@@ -114,19 +114,19 @@ int main(int argc, char *argv[])
     if (type == LIBNET_TCP_DNSV4_H) /* TCP DNS */
     {
         ptag4 = libnet_build_tcp(
-            0x6666,                                        /* source port */
-            53,                                            /* destination port */
-            0x01010101,                                    /* sequence number */
-            0x02020202,                                    /* acknowledgement num */
-            TH_PUSH | TH_ACK,                              /* control flags */
-            32767,                                         /* window size */
-            0,                                             /* checksum */
-            0,                                             /* urgent pointer */
-            LIBNET_TCP_H + LIBNET_TCP_DNSV4_H + payload_s, /* TCP packet size */
-            NULL,                                          /* payload */
-            0,                                             /* payload size */
-            l,                                             /* libnet handle */
-            0);                                            /* libnet id */
+                0x6666,                                        /* source port */
+                53,                                            /* destination port */
+                0x01010101,                                    /* sequence number */
+                0x02020202,                                    /* acknowledgement num */
+                TH_PUSH | TH_ACK,                              /* control flags */
+                32767,                                         /* window size */
+                0,                                             /* checksum */
+                0,                                             /* urgent pointer */
+                LIBNET_TCP_H + LIBNET_TCP_DNSV4_H + payload_s, /* TCP packet size */
+                NULL,                                          /* payload */
+                0,                                             /* payload size */
+                l,                                             /* libnet handle */
+                0);                                            /* libnet id */
 
         if (ptag4 == -1)
         {
@@ -135,19 +135,19 @@ int main(int argc, char *argv[])
         }
 
         ip = libnet_build_ipv4(
-            LIBNET_IPV4_H + LIBNET_TCP_H + type + payload_s, /* length */
-            0,                                               /* TOS */
-            242,                                             /* IP ID */
-            0,                                               /* IP Frag */
-            64,                                              /* TTL */
-            IPPROTO_TCP,                                     /* protocol */
-            0,                                               /* checksum */
-            src_ip,                                          /* source IP */
-            dst_ip,                                          /* destination IP */
-            NULL,                                            /* payload */
-            0,                                               /* payload size */
-            l,                                               /* libnet handle */
-            0);                                              /* libnet id */
+                LIBNET_IPV4_H + LIBNET_TCP_H + type + payload_s, /* length */
+                0,                                               /* TOS */
+                242,                                             /* IP ID */
+                0,                                               /* IP Frag */
+                64,                                              /* TTL */
+                IPPROTO_TCP,                                     /* protocol */
+                0,                                               /* checksum */
+                src_ip,                                          /* source IP */
+                dst_ip,                                          /* destination IP */
+                NULL,                                            /* payload */
+                0,                                               /* payload size */
+                l,                                               /* libnet handle */
+                0);                                              /* libnet id */
 
         if (ip == -1)
         {
@@ -158,14 +158,14 @@ int main(int argc, char *argv[])
     else /* UDP DNS */
     {
         ptag4 = libnet_build_udp(
-            0x6666,                                        /* source port */
-            53,                                            /* destination port */
-            LIBNET_UDP_H + LIBNET_UDP_DNSV4_H + payload_s, /* packet length */
-            0,                                             /* checksum */
-            NULL,                                          /* payload */
-            0,                                             /* payload size */
-            l,                                             /* libnet handle */
-            0);                                            /* libnet id */
+                0x6666,                                        /* source port */
+                53,                                            /* destination port */
+                LIBNET_UDP_H + LIBNET_UDP_DNSV4_H + payload_s, /* packet length */
+                0,                                             /* checksum */
+                NULL,                                          /* payload */
+                0,                                             /* payload size */
+                l,                                             /* libnet handle */
+                0);                                            /* libnet id */
 
         if (ptag4 == -1)
         {
@@ -174,19 +174,19 @@ int main(int argc, char *argv[])
         }
 
         ip = libnet_build_ipv4(
-            LIBNET_IPV4_H + LIBNET_UDP_H + type + payload_s, /* length */
-            0,                                               /* TOS */
-            242,                                             /* IP ID */
-            0,                                               /* IP Frag */
-            64,                                              /* TTL */
-            IPPROTO_UDP,                                     /* protocol */
-            0,                                               /* checksum */
-            src_ip,                                          /* source IP */
-            dst_ip,                                          /* destination IP */
-            NULL,                                            /* payload */
-            0,                                               /* payload size */
-            l,                                               /* libnet handle */
-            0);                                              /* libnet id */
+                LIBNET_IPV4_H + LIBNET_UDP_H + type + payload_s, /* length */
+                0,                                               /* TOS */
+                242,                                             /* IP ID */
+                0,                                               /* IP Frag */
+                64,                                              /* TTL */
+                IPPROTO_UDP,                                     /* protocol */
+                0,                                               /* checksum */
+                src_ip,                                          /* source IP */
+                dst_ip,                                          /* destination IP */
+                NULL,                                            /* payload */
+                0,                                               /* payload size */
+                l,                                               /* libnet handle */
+                0);                                              /* libnet id */
 
         if (ip == -1)
         {
@@ -210,7 +210,7 @@ int main(int argc, char *argv[])
     }
     libnet_destroy(l);
     return (EXIT_SUCCESS);
-bad:
+    bad:
     libnet_destroy(l);
     return (EXIT_FAILURE);
 }
