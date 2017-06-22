@@ -10,12 +10,12 @@
 #include <errno.h>
 
 #define MAXLINE 512
-#define SERV_PORT 8003
-#define LISTENQ 64
+#define SEND_PORT 8003
+#define REQUEST_QUEUE_COUNT 64
 
 //static ssize_t my_read(int fd, char *ptr);
 ssize_t readline(int fd, void *vptr, size_t maxlen);
-ssize_t writen(int fd, const void *vptr, int n);
+ssize_t writen(int fd, const void *sendline, int n);
 
 int main(int argc, char **argv){
   int i,maxi, maxfd;
@@ -48,10 +48,10 @@ int main(int argc, char **argv){
   bzero(&serv_addr, sizeof(serv_addr));
   serv_addr.sin_family=AF_INET;
   serv_addr.sin_addr.s_addr=htonl(INADDR_ANY);
-  serv_addr.sin_port=htons(SERV_PORT);
+  serv_addr.sin_port=htons(SEND_PORT);
 
   bind(listen_fd,(struct sockaddr *)&serv_addr, sizeof(serv_addr));
-  listen(listen_fd,LISTENQ);
+  listen(listen_fd,REQUEST_QUEUE_COUNT);
   maxfd=listen_fd;
   maxi=-1;
 
